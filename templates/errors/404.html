@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <div class="glass-card" data-aos="fade-up">
+        <i data-feather="alert-triangle" class="text-warning mb-4" style="width: 64px; height: 64px;"></i>
+        <h1 class="neon-text">404</h1>
+        <h2 class="mb-4">Page Not Found</h2>
+        <p class="text-muted mb-4">The page you're looking for doesn't exist or has been moved.</p>
+        <a href="{{ url_for('home') }}" class="btn btn-glow">
+            <i data-feather="home"></i> Go Home
+        </a>
+    </div>
+</div>
+{% endblock %}

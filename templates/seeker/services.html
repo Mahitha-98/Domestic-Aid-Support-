@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Services{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="neon-text" data-aos="fade-right">Available Services</h1>
+        </div>
+        <div class="col-md-4">
+            <form class="d-flex" method="GET">
+                <input type="search" name="search" class="form-control me-2" 
+                       placeholder="Search services..." value="{{ search }}">
+                <button class="btn btn-glow" type="submit">
+                    <i data-feather="search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="glass-card mb-4" data-aos="fade-up">
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('seeker.services', category='all') }}" 
+               class="btn {{ 'btn-glow' if category == 'all' else 'btn-outline-light' }}">
+                All
+            </a>
+            {% for cat in ['cleaning', 'cooking', 'gardening', 'babysitting', 'eldercare', 'petcare'] %}
+                <a href="{{ url_for('seeker.services', category=cat) }}" 
+                   class="btn {{ 'btn-glow' if category == cat else 'btn-outline-light' }}">
+                    {{ cat|title }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Service Cards -->
+    <div class="row">
+        {% for service in services %}
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                <div class="glass-card service-card h-100">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ service.provider.profile_image_url }}" 
+                             alt="{{ service.provider.name }}" 
+                             class="rounded-circle me-3"
+                             style="width: 50px; height: 50px; object-fit: cover;">
+                        <div>
+                            <h5 class="mb-0">{{ service.provider.name }}</h5>
+                            <small class="text-muted">{{ service.category|title }}</small>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ service.title }}</h5>
+                        <small class="text-muted">Note: Services with completed bookings cannot be removed by providers</small>
+                    </div>
+
+                    <p>{{ service.description }}</p>
+
+                    <!-- Rating Stars -->
+                    <div class="mb-2">
+                        {% set rating = service.average_rating %}
+                        {% for i in range(5) %}
+                            <i class="feather-star {{ 'text-warning' if i < rating else 'text-muted' }}"></i>
+                        {% endfor %}
+                        <small class="text-muted ms-2">
+                            ({{ service.reviews|length }} reviews)
+                        </small>
+                    </div>
+
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="neon-text mb-0">₹{{ service.rate }}/hr</h5>
+                            <a href="{{ url_for('seeker.book_service', service_id=service.id) }}" 
+                               class="btn btn-glow">
+                                <i data-feather="calendar"></i> Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <img src="https://ui-avatars.com/api/?name=No+Services&size=200&background=0D8ABC&color=fff" 
+                     alt="No services" 
+                     class="img-fluid mb-3" 
+                     style="max-width: 200px;">
+                <h4 class="text-muted">No services found</h4>
+                <p>Try adjusting your search or browse all categories</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,449 @@
+/* Import Cyberpunk-style fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-glow: #6c63ff;
+    --secondary-glow: #ff6b6b;
+    --neon-blue: #00f3ff;
+    --neon-purple: #9d00ff;
+    --bg-dark: #0a0a0f;
+    --bg-card: rgba(255, 255, 255, 0.05);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: #ffffff;
+    font-family: 'Rajdhani', sans-serif;
+    background-image: 
+        radial-gradient(circle at 50% 50%, rgba(108, 99, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 100% 0%, rgba(0, 243, 255, 0.1) 0%, transparent 50%);
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+}
+
+/* Glassmorphism Cards with Single Animation */
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: -150%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(108, 99, 255, 0.1),
+        rgba(0, 243, 255, 0.2),
+        transparent
+    );
+    transform: rotate(45deg);
+    animation: lightBar 3s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes lightBar {
+    0% { 
+        transform: translateX(-100%) rotate(45deg);
+        opacity: 0;
+    }
+    50% { 
+        opacity: 1;
+    }
+    100% { 
+        transform: translateX(100%) rotate(45deg);
+        opacity: 0;
+    }
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 0 20px var(--primary-glow),
+        0 0 40px rgba(108, 99, 255, 0.2),
+        0 0 60px rgba(0, 243, 255, 0.1);
+}
+
+/* Neon Text Effects */
+.neon-text {
+    color: #fff;
+    text-shadow: 
+        0 0 5px var(--primary-glow),
+        0 0 10px var(--primary-glow),
+        0 0 20px var(--neon-blue);
+    animation: neonPulse 2s infinite;
+}
+
+@keyframes neonPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+/* Enhanced Button Styles */
+.btn-glow {
+    background: linear-gradient(45deg, var(--primary-glow), var(--neon-blue));
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.btn-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+    z-index: -1;
+}
+
+.btn-glow:hover::before {
+    left: 100%;
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.btn-glow:hover {
+    transform: scale(1.05);
+    box-shadow: 
+        0 0 20px var(--primary-glow),
+        0 0 40px rgba(108, 99, 255, 0.4);
+}
+
+/* Service Cards with Enhanced Hover Effects */
+.service-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.service-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 15px;
+    padding: 2px;
+    background: linear-gradient(45deg, var(--primary-glow), var(--neon-blue));
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.service-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 
+        0 0 30px rgba(108, 99, 255, 0.3),
+        0 0 50px rgba(0, 243, 255, 0.2);
+}
+
+/* Enhanced Form Controls */
+.form-control {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary-glow);
+    box-shadow: 
+        0 0 0 0.2rem rgba(108, 99, 255, 0.25),
+        0 0 20px rgba(0, 243, 255, 0.2);
+    color: white;
+}
+
+/* Loading Animation */
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--neon-blue);
+    animation: spin 1s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Image Enhancement */
+.profile-image {
+    border: 2px solid var(--primary-glow);
+    box-shadow: 0 0 20px rgba(108, 99, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+    box-shadow: 
+        0 0 30px var(--primary-glow),
+        0 0 50px rgba(0, 243, 255, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .glass-card {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .btn-glow {
+        padding: 8px 16px;
+    }
+    .register-link {
+        margin: 10px 15px;
+    }
+}
+
+/* Enhanced Footer Styles */
+.footer-content {
+    background: linear-gradient(to top, var(--bg-dark) 0%, rgba(10, 10, 15, 0.9) 100%);
+    border-top: 1px solid rgba(108, 99, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--neon-blue),
+        var(--primary-glow),
+        var(--neon-purple),
+        transparent
+    );
+    animation: glowLine 3s linear infinite;
+}
+
+@keyframes glowLine {
+    0% { opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { opacity: 0.3; }
+}
+
+.footer-section {
+    padding: 20px;
+}
+
+.footer-section h5 {
+    color: var(--neon-blue);
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+}
+
+.footer-link {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin: 5px 0;
+}
+
+.footer-link:hover {
+    color: var(--neon-blue);
+    transform: translateX(5px);
+    text-shadow: 0 0 10px var(--neon-blue);
+}
+
+.feather-small {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Register Link Styles */
+.register-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 20px;
+    color: var(--neon-blue);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 2px solid var(--neon-blue);
+    border-radius: 30px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.register-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 243, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.register-link:hover {
+    color: #fff;
+    background: var(--neon-blue);
+    box-shadow: 
+        0 0 20px var(--neon-blue),
+        0 0 40px rgba(0, 243, 255, 0.2),
+        0 0 60px rgba(0, 243, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.register-link:hover::before {
+    left: 100%;
+    animation: shine 1.5s infinite;
+}
+
+.register-link span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.register-link i {
+    width: 18px;
+    height: 18px;
+}
+
+/* Enhanced Button Styles */
+.btn-outline-danger {
+    color: var(--secondary-glow);
+    border-color: var(--secondary-glow);
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    color: #fff;
+    background: var(--secondary-glow);
+    border-color: var(--secondary-glow);
+    box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
+}
+
+.btn-outline-info {
+    color: var(--neon-blue);
+    border-color: var(--neon-blue);
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-info:hover {
+    color: #fff;
+    background: var(--neon-blue);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+}
+
+/* Service Card Action Buttons */
+.service-card .btn {
+    padding: 0.4rem 0.8rem;
+    border-width: 2px;
+    backdrop-filter: blur(5px);
+}
+
+.service-card .btn i {
+    width: 16px;
+    height: 16px;
+}
+
+/* Day Checkboxes Styling */
+.day-checkboxes {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.form-check {
+    padding: 0.5rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.form-check:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.form-check-input {
+    background-color: transparent;
+    border-color: var(--primary-glow);
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-glow);
+    border-color: var(--primary-glow);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.form-check-label {
+    cursor: pointer;
+    padding-left: 0.5rem;
+    user-select: none;
+}
+
+/* Modal Quick-Select Buttons */
+.quick-select-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.quick-select-btn {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.75rem;
+}

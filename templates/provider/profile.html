@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+
+{% block title %}Provider Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- Profile Info -->
+        <div class="col-md-4 mb-4" data-aos="fade-right">
+            <div class="glass-card">
+                <div class="text-center mb-4">
+                    <img src="{{ current_user.profile_image_url }}" 
+                         alt="Profile" 
+                         class="rounded-circle profile-image mb-3"
+                         style="width: 150px; height: 150px; object-fit: cover;">
+                    <h3 class="neon-text">{{ current_user.name }}</h3>
+                    <p class="text-muted">{{ current_user.email }}</p>
+                </div>
+
+                <div class="d-grid">
+                    <button class="btn btn-glow mb-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i data-feather="edit"></i> Edit Profile
+                    </button>
+                </div>
+            </div>
+
+            <!-- Availability Section -->
+            <div class="glass-card mt-4">
+                <h4 class="mb-3">Working Hours</h4>
+                <button class="btn btn-glow mb-3" data-bs-toggle="modal" data-bs-target="#addAvailabilityModal">
+                    <i data-feather="clock"></i> Add Availability
+                </button>
+
+                <div class="availability-list">
+                    {% for availability in current_user.availabilities %}
+                        <div class="availability-item mb-2 p-2 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ availability.day_name }}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        {{ availability.start_time.strftime('%I:%M %p') }} - 
+                                        {{ availability.end_time.strftime('%I:%M %p') }}
+                                    </small>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            onclick="deleteAvailability({{ availability.id }})">
+                                        <i data-feather="trash-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No availability set</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Service Form -->
+        <div class="col-md-8 mb-4" data-aos="fade-left">
+            <div class="glass-card">
+                <h3 class="mb-4">Add New Service</h3>
+
+                <form method="POST" class="needs-validation" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control", placeholder="Enter service title") }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows="4", placeholder="Describe your service") }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.rate.label(class="form-label") }}
+                            {{ form.rate(class="form-control", placeholder="Hourly rate") }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form.category.label(class="form-label") }}
+                            {{ form.category(class="form-select") }}
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-glow">
+                            <i data-feather="plus-circle"></i> Add Service
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service List -->
+    <h3 class="mb-4 neon-text" data-aos="fade-up">Your Services</h3>
+    <div class="row">
+        {% for service in services %}
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                <div class="glass-card service-card">
+                    <h4>{{ service.title }}</h4>
+                    <p class="text-muted">{{ service.category }}</p>
+                    <p>{{ service.description }}</p>
+                    <h5 class="neon-text">₹{{ service.rate }}/hr</h5>
+                    <!-- Rating display -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center">
+                            {% for i in range(5) %}
+                                <i class="feather-star {{ 'text-warning' if i < service.average_rating else 'text-muted' }}"></i>
+                            {% endfor %}
+                            <span class="ms-2 text-muted">({{ service.reviews|length }} reviews)</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-3">
+                        <button class="btn btn-sm btn-outline-info me-2" onclick="editService({{ service.id }})">
+                            <i data-feather="edit-2"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteService({{ service.id }})">
+                            <i data-feather="trash-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Availability Modal -->
+<div class="modal fade" id="addAvailabilityModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Working Hours</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="availabilityForm">
+                    <div class="mb-3">
+                        <label class="form-label">Select Days</label>
+                        <!-- Quick select buttons -->
+                        <div class="quick-select-buttons">
+                            <button type="button" class="btn btn-sm btn-outline-light quick-select-btn" onclick="selectWeekdays()">Weekdays</button>
+                            <button type="button" class="btn btn-sm btn-outline-light quick-select-btn" onclick="selectWeekend()">Weekend</button>
+                            <button type="button" class="btn btn-sm btn-outline-light quick-select-btn" onclick="selectAllDays()">All Days</button>
+                        </div>
+                        <div class="day-checkboxes">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="0" id="monday">
+                                <label class="form-check-label" for="monday">Monday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1" id="tuesday">
+                                <label class="form-check-label" for="tuesday">Tuesday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="2" id="wednesday">
+                                <label class="form-check-label" for="wednesday">Wednesday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="3" id="thursday">
+                                <label class="form-check-label" for="thursday">Thursday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="4" id="friday">
+                                <label class="form-check-label" for="friday">Friday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="5" id="saturday">
+                                <label class="form-check-label" for="saturday">Saturday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="6" id="sunday">
+                                <label class="form-check-label" for="sunday">Sunday</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Start Time</label>
+                        <input type="time" class="form-control" id="startTime" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">End Time</label>
+                        <input type="time" class="form-control" id="endTime" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-glow" onclick="saveAvailability()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Model -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Profile</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm">
+                    <div class="mb-3">
+                        <label class="form-label">Profile Picture</label>
+                        <input type="file" class="form-control" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" value="{{ current_user.name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" value="{{ current_user.email }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" value="{{ current_user.ph_no }}">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-glow">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Quick select functions
+function selectWeekdays() {
+    const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+    weekdays.forEach(day => document.getElementById(day).checked = true);
+    document.getElementById('saturday').checked = false;
+    document.getElementById('sunday').checked = false;
+}
+
+function selectWeekend() {
+    document.getElementById('saturday').checked = true;
+    document.getElementById('sunday').checked = true;
+    ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(day => 
+        document.getElementById(day).checked = false
+    );
+}
+
+function selectAllDays() {
+    document.querySelectorAll('.day-checkboxes input[type="checkbox"]').forEach(checkbox => 
+        checkbox.checked = true
+    );
+}
+
+function validateTimes(startTime, endTime) {
+    if (!startTime || !endTime) {
+        alert('Please select both start and end times');
+        return false;
+    }
+
+    const start = new Date(`2000-01-01T${startTime}`);
+    const end = new Date(`2000-01-01T${endTime}`);
+
+    if (end <= start) {
+        alert('End time must be after start time');
+        return false;
+    }
+
+    return true;
+}
+
+function saveAvailability() {
+    const startTime = document.getElementById('startTime').value;
+    const endTime = document.getElementById('endTime').value;
+
+    if (!validateTimes(startTime, endTime)) {
+        return;
+    }
+
+    // Get all selected days
+    const selectedDays = [];
+    document.querySelectorAll('.day-checkboxes input[type="checkbox"]:checked').forEach(checkbox => {
+        selectedDays.push(parseInt(checkbox.value));
+    });
+
+    if (selectedDays.length === 0) {
+        alert('Please select at least one day');
+        return;
+    }
+
+    // Show loading state
+    const saveButton = document.querySelector('[onclick="saveAvailability()"]');
+    saveButton.disabled = true;
+    saveButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+
+    // Create availability for each selected day
+    Promise.all(selectedDays.map(dayOfWeek => 
+        fetch('/provider/availability', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                day_of_week: dayOfWeek,
+                start_time: startTime,
+                end_time: endTime
+            })
+        }).then(response => response.json())
+    ))
+    .then(results => {
+        const errors = results.filter(result => !result.success);
+        if (errors.length > 0) {
+            alert('Some days could not be added. They might already have availability set.');
+        } else {
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while saving availability');
+    })
+    .finally(() => {
+        saveButton.disabled = false;
+        saveButton.innerHTML = 'Save';
+    });
+}
+
+function deleteAvailability(id) {
+    if (confirm('Are you sure you want to delete this availability?')) {
+        fetch(`/provider/availability/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.error);
+            }
+        });
+    }
+}
+
+function deleteService(serviceId) {
+    if (confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
+        fetch(`/provider/service/${serviceId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.error || 'Failed to delete service');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the service');
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <div class="glass-card" data-aos="fade-up">
+        <i data-feather="alert-octagon" class="text-danger mb-4" style="width: 64px; height: 64px;"></i>
+        <h1 class="neon-text">500</h1>
+        <h2 class="mb-4">Server Error</h2>
+        <p class="text-muted mb-4">Something went wrong on our end. Please try again later.</p>
+        <a href="{{ url_for('home') }}" class="btn btn-glow">
+            <i data-feather="home"></i> Go Home
+        </a>
+    </div>
+</div>
+{% endblock %}

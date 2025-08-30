@@ -1,0 +1,10 @@
+price = 10.99
+print(f"The price is ₹{price}")
+
+price_str = "$25.50"
+new_price_str = price_str.replace("$", "₹")
+print(new_price_str)
+
+item_prices = {"apple": "$1", "banana": "$0.50"}
+new_item_prices = {k: v.replace("$", "₹") for k, v in item_prices.items()}
+print(new_item_prices)

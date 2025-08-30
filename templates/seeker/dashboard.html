@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Seeker Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="neon-text mb-4" data-aos="fade-right">My Bookings</h1>
+
+    <!-- Booking Stats -->
+    <div class="row mb-4">
+        <div class="col-md-4" data-aos="fade-up">
+            <div class="glass-card">
+                <h4 class="mb-3">Quick Stats</h4>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5>Total Bookings</h5>
+                        <h2 class="neon-text">{{ bookings|length }}</h2>
+                    </div>
+                    <i data-feather="calendar" class="text-primary" style="width: 48px; height: 48px;"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>Find Services</h4>
+                    <a href="{{ url_for('seeker.services') }}" class="btn btn-glow">
+                        <i data-feather="search"></i> Browse Services
+                    </a>
+                </div>
+                <p class="text-muted">Find and book trusted service providers for your needs</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Bookings -->
+    <div class="glass-card mb-4" data-aos="fade-up" data-aos-delay="200">
+        <h3 class="mb-4">My Bookings</h3>
+        {% if bookings %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Provider</th>
+                            <th>Date</th>
+                            <th>Time Slot</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                            {% if booking.status != 'completed' %}
+                                <tr>
+                                    <td>{{ booking.service.title }}</td>
+                                    <td>{{ booking.service.provider.name }}</td>
+                                    <td>{{ booking.date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ booking.time_slot }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'warning' if booking.status == 'pending' 
+                                            else 'success' if booking.status == 'approved' 
+                                            else 'info' }}">
+                                            {{ booking.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <img src="https://cdn3d.iconscout.com/3d/premium/thumb/empty-calendar-7590712-6167860.png?f=webp" 
+                     alt="No bookings" 
+                     class="img-fluid mb-3" 
+                     style="max-width: 200px;">
+                <h4 class="neon-text">No Bookings Yet!</h4>
+                <p class="text-muted mb-3">Ready to get started? Browse and book your first service!</p>
+                <a href="{{ url_for('seeker.services') }}" class="btn btn-glow mt-2">
+                    <i data-feather="search"></i> Find Services
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Past Bookings -->
+    <div class="glass-card" data-aos="fade-up" data-aos-delay="300">
+        <h3 class="mb-4">Past Bookings</h3>
+        {% if bookings %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Provider</th>
+                            <th>Date</th>
+                            <th>Time Slot</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                            {% if booking.status == 'completed' %}
+                                <tr>
+                                    <td>{{ booking.service.title }}</td>
+                                    <td>{{ booking.service.provider.name }}</td>
+                                    <td>{{ booking.date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ booking.time_slot }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-glow" data-bs-toggle="modal" data-bs-target="#rateModal{{ booking.id }}">
+                                            <i data-feather="star"></i> Rate
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Rating Modal -->
+                                <div class="modal fade" id="rateModal{{ booking.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content bg-dark">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Rate Service</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="text-center mb-4">
+                                                    <div class="rating">
+                                                        {% for i in range(5) %}
+                                                            <i class="feather-star text-warning" style="cursor: pointer;"></i>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Review</label>
+                                                    <textarea class="form-control" rows="3" placeholder="Share your experience"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-glow">Submit Review</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center text-muted">
+                <p>No past bookings</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
